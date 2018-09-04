@@ -1,0 +1,12 @@
+spring:
+  jackson:
+    date-format: yyyy-MM-dd #
+    timezone: GMT+8
+    serialization:
+      write-datesas-timestamps: false #是否使用时间戳来表示时间
+
+logging:
+  file: target/app.log
+  level:
+    ROOT: WARN
+    com.javalearning.restful.restful: TRACE
