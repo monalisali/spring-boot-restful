@@ -1,13 +1,20 @@
 package com.javalearning.restful.restful;
 
-import jdk.management.resource.ResourceRequestDeniedException;
+
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.*;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/tvseries")
@@ -114,6 +121,34 @@ public class TvSeriesController {
         }
 
         return  result;
+    }
+
+
+    //上传文件
+    //1. 定位到存放poi.jpg文件的目录
+    //2. 运行命令： curl -v -F "photo=@poi.jpg" http://localhost:8080/tvseries/102/photos
+    //3. poi.jpg会存放到项目的target目录下
+    @PostMapping(value = "/{id}/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public  void addPhoto(@PathVariable int id, @RequestParam("photo")MultipartFile imgFile) throws Exception{
+        if(log.isTraceEnabled()){
+            log.trace("接收到文件 " + id + "收到文件: " + imgFile.getOriginalFilename());
+        }
+
+        FileOutputStream fos = new FileOutputStream("target/" + imgFile.getOriginalFilename());
+        IOUtils.copy(imgFile.getInputStream(),fos);
+        fos.close();
+    }
+
+
+    @GetMapping(value="/{id}/icon",produces = MediaType.IMAGE_JPEG_VALUE)
+    //浏览器url：http://localhost:8080/tvseries/101/icon
+    public  byte[] getIcon(@PathVariable int id)throws Exception{
+        if(log.isTraceEnabled()){
+            log.trace("getIcon(" + id +")");
+        }
+        String iconFile = "src/test/resources/car.jpg";
+        InputStream ls = new FileInputStream(iconFile);
+        return org.apache.commons.io.IOUtils.toByteArray(ls);
     }
 
 
